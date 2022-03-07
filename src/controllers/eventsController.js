@@ -50,8 +50,84 @@ module.exports = {
     },
     update : async (req,res) => {
 
+        const {id} = req.params;
+
+        try {
+
+            const event = await Event.findById(id);
+
+            if(!event){
+                return res.status(404).json({
+                    ok : false,
+                    msg : 'El evento no existe'
+                })
+            }
+
+            if(event.user.toString() !== req.uid){
+                return res.status(401).json({
+                    ok : false,
+                    msg : 'No está autorizado para editar este evento'
+                })
+            }
+
+            const eventUpdate = {
+                ...req.body,
+                user : req.uid
+            }
+
+            await Event.findByIdAndUpdate(id, eventUpdate);
+
+            return res.status(200).json({
+                ok : true,
+                msg : 'Evento actualizado con éxito'
+            })
+
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Contáctese con el administrador del sitio',
+                error
+            })
+        }
     },
     remove : async (req,res) => {
 
+        const {id} = req.params;
+
+        try {
+
+            const event = await Event.findById(id);
+
+            if(!event){
+                return res.status(404).json({
+                    ok : false,
+                    msg : 'El evento no existe'
+                })
+            }
+
+            if(event.user.toString() !== req.uid){
+                return res.status(401).json({
+                    ok : false,
+                    msg : 'No está autorizado para eliminar este evento'
+                })
+            }
+
+            await Event.findByIdAndDelete(id);
+
+            return res.status(200).json({
+                ok : true,
+                msg : 'Evento eliminado con éxito'
+            })
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                ok: false,
+                msg: 'Contáctese con el administrador del sitio',
+                error
+            })
+        }
     }
 }
