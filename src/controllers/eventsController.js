@@ -9,7 +9,8 @@ module.exports = {
             
             return res.status(200).json({
                 ok :true,
-                data : events
+                total : events.length,
+                data : events,
             })
             
         } catch (error) {
